@@ -12,3 +12,5 @@ Project requirements:
 3. A history of announcements with relavent details (date/time of publishing, author)
 Optional:
 1. Auto-save of editable drafts,edited posts.
+
+=====================
