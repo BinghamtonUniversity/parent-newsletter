@@ -7,7 +7,6 @@ require_once 'Database.php';
  * This class is not an independent class but must be further derived to the appropriate table.
  * BE CAREFUL WITH DERIVED CLASS VARIABLE NAMES DOESNT CONFLICT WITH THIS CLASS
  * @author footy
- * @copyright Ajitah
  */
 abstract class DataBoundObject {
 	protected $ID; //Stores the primary/composit keys of the database
@@ -73,16 +72,15 @@ abstract class DataBoundObject {
 	 * 2. All the keys(primary/composite) have their corresponding values specified
 	 */
 	protected function isIDDefined() {
-		$ans = false;
 		if (count ( $this->ID ) > 0) {
+			//if((array)is_array($this->ID)) { echo "Yes Array!\n"; var_dump($this->ID); }
+			//var_dump($this->ID);
 			foreach ( $this->ID as $clause ) {
 				if (! isset ( $clause ['value'] ) || $clause ['value'] === NULL)
 					return false;
-				$ans = true;
 			}
 		}
-		
-		return $ans;
+		return true;
 	}
 	/*
 	 * Note that you HAVE to give the id values as an ARRAY data even if its a single value
@@ -164,7 +162,6 @@ abstract class DataBoundObject {
 	public function Load() {
 		
 		$dataToBeChanged = array ();
-		
 		if ($this->isIDDefined ()) {
 			$strQuery = " SELECT ";
 			foreach ( $this->arRelationMap as $key => $value ) {
@@ -182,6 +179,7 @@ abstract class DataBoundObject {
 			
 			$result = null;
 			$parmForQuery = implode ( ',', $dataToBeChanged );
+			//	echo '$result = Database::query($strQuery,' . $parmForQuery . ');'.$strQuery.$DATA_TO_DB_ID;
 			eval ( '$result = Database::query($strQuery,' . $parmForQuery . ');' );
 			$row = $result->fetch ();
 			if (! $row) {
@@ -271,8 +269,7 @@ abstract class DataBoundObject {
 			
 			if ($clause ['field'] == $this->AutoIncrementFeild) {
 				$this->ID [$key] ['value'] = Database::getLastInsertId ();
-				//echo $this->ID [$key] ['value'];
-				eval ( '$this->' . $clause ['field'] . ' = $this->ID[$key][\'value\'];' );
+				eval ( '$this->' . $this->arRelationMap[$clause ['field']] . ' = $this->ID[$key][\'value\'];' );
 				break;
 			} else {
 				eval ( '$this->ID[$key][\'value\'] = $this->' . $this->arRelationMap [$clause ['field']] . ';' );

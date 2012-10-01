@@ -12,7 +12,7 @@
  * @copyright Ajitah
  */
 define ( "HOST", "localhost" );
-define ( "DB", "bubbles" );
+define ( "DB", "budb" );
 define ( "NORMAL_USER", "root" );
 define ( "NORMAL_PASS", "root" );
 define ( "ADMIN_USER", "root" );

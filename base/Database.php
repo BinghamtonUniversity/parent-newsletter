@@ -8,7 +8,6 @@ require_once 'config.php';
  * All methods are static to avoid any objects being build
  * The class is final as it shouldnt be extended 
  * @author Adarsha
- * @copyright Ajitah
  */
 final class Database {
 	
