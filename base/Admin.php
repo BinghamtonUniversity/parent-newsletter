@@ -8,7 +8,6 @@ require_once 'DataBoundObject.php';
 
 class Admin extends DataBoundObject {
 
-	protected $AdminID;
 	protected $Username;
 	protected $Password;
 	
@@ -25,7 +24,7 @@ class Admin extends DataBoundObject {
 	 * @see DataBoundObject::DefineAutoIncrementField()
 	 */
 	protected function DefineAutoIncrementField() {	
-		return 'ID';	
+		return null;	
 	}
 	
 	/**
@@ -43,7 +42,6 @@ class Admin extends DataBoundObject {
 	protected function DefineRelationMap() {
 	
 	return array(
-			"ID"	=>	"AdminID",
 			"USERNAME" => "Username",
 			"PASSWORD" => "Password"
 		);
@@ -54,7 +52,36 @@ class Admin extends DataBoundObject {
 	 * @see DataBoundObject::DefineID()
 	 */
 	protected function DefineID() {
-		return array('ID');
+		return array('Username');
 	}
+
+	public function setPassword($p) {
+		if(strlen($p) >= 2 && strlen($p) <= 75)
+			parent::setPassword(md5($p));
+		else
+			throw new Exception("Password should be between 2 & 75 charecters");
+	}
+
+	public function setUsername($name) {
+		if(strlen($name) > 0 && 
+			strlen($name) <= 75 && 
+			preg_match('( [a-z] | [A-Z] | [0-9] | "_")+', $name)) {
+			
+			$userExist = false;
+			try {
+				$tmp = new Admin(array($name));
+				$userExist = true;
+			}
+			catch (Exception $e) {
+
+			}
+
+			if($userExist) throw new Exception("User already exist with this name");
+
+			parent::setUsername($name);
+		}
+		else
+			throw new Exception("Name not in the right format. Only alpha numeric charecters with _ (underscore) & upto 75 charecters allowed");
+	} 
 }
 ?>
