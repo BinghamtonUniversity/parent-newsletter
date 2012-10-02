@@ -63,9 +63,7 @@ class Admin extends DataBoundObject {
 	}
 
 	public function setUsername($name) {
-		if(strlen($name) > 0 && 
-			strlen($name) <= 75 && 
-			preg_match('( [a-z] | [A-Z] | [0-9] | "_")+', $name)) {
+		if(preg_match('/^[a-z\d_]{2,75}$/i', $name)) {
 			
 			$userExist = false;
 			try {
@@ -81,7 +79,29 @@ class Admin extends DataBoundObject {
 			parent::setUsername($name);
 		}
 		else
-			throw new Exception("Name not in the right format. Only alpha numeric charecters with _ (underscore) & upto 75 charecters allowed");
-	} 
+			throw new Exception("Name-$name not in the right format. Only alpha numeric charecters with _ (underscore) .(dot) - (dash) & between 2 - 75 charecters allowed");
+	}
+
+	public function markForDeletion() {
+		$result = Database::query("SELECT count(username) as cnt FROM AT_ADMIN");
+		$row = $result->fetch();
+		if($row['cnt'] > 1) 
+			parent::markForDeletion();
+		else
+			throw new Exception("Cant delete the admin. Only admin left");
+	}
+
+	public static function AllAdmins() {
+		$result = Database::query("SELECT * FROM AT_ADMIN");
+		$ans = array();
+		for($row = $result->fetch();$row;$row = $result->fetch())
+		{
+			$e = new Admin();
+			$e->populateData($row);				
+			$ans[] = $e;
+		}
+		
+		return $ans;
+	}
 }
 ?>

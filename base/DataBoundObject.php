@@ -55,11 +55,13 @@ abstract class DataBoundObject {
 	protected function loadIDs() {
 		
 		if (count ( $this->ID ) > 0) {
-			foreach ( $this->ID as $key => $clause ) {
-				if (property_exists ( $this, $this->arRelationMap [$clause ['field']] )) {
+			foreach ( $this->ID as $key => $clause ) { 
+				
+				if (property_exists ( $this, $clause ['field'] )) {
 					$tmp = null;
-					eval ( '$tmp = $this->get' . $this->arRelationMap [$clause ['field']] . '();' );
+					eval ( '$tmp = $this->get' . $clause ['field'] . '();' );
 					$this->ID [$key] ['value'] = $tmp;
+
 				}
 			}
 		}
@@ -219,9 +221,9 @@ abstract class DataBoundObject {
 				$strMember = $this->arRelationMap [$key];
 				if (property_exists ( $this, $strMember )) {
 					if (is_numeric ( $value )) {
-						eval ( '$this->' . $strMember . ' = ' . $value . ';' );
+						eval ( '$this->' . $strMember . ' =  $value ;' );
 					} else {
-						eval ( '$this->' . $strMember . ' = "' . $value . '";' );
+						eval ( '$this->' . $strMember . ' = $value ;' );
 					}
 				}
 			}
@@ -272,7 +274,7 @@ abstract class DataBoundObject {
 				eval ( '$this->' . $this->arRelationMap[$clause ['field']] . ' = $this->ID[$key][\'value\'];' );
 				break;
 			} else {
-				eval ( '$this->ID[$key][\'value\'] = $this->' . $this->arRelationMap [$clause ['field']] . ';' );
+				eval ( '$this->ID[$key][\'value\'] = $this->' . $clause ['field'] . ';' );
 			}
 		}
 		$this->Load ();
