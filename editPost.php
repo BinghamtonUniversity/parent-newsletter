@@ -1,5 +1,20 @@
 <?php 
 include_once('base/include_top.php');
+if(!isset($_GET['id'])) {
+	header("Location: panel.php");
+	exit;
+}
+
+$id = $_GET['id'];
+try {
+	$post = new Posts(array($id));
+}
+catch(Exception $e) {
+	//id not present
+	header("Location: panel.php");
+	exit;
+}
+
 ?>
 <html>
 <head>
@@ -22,10 +37,10 @@ include_once('base/include_top.php');
 	<form action="services/addPost.php" method="POST">
 
 		<lable> <b>Title:</b> </lable>
-		<input name="title" type="text" class="sedang"/>
+		<input name="title" type="text" class="sedang" value="<?=$post->getTitle();?>"/>
 		<input name="draft" type="submit" class="button" value="Save as draft"/>
 		<input name="publish" type="submit" class="button" value="Publish!"/>
-		<textarea class="ckeditor" name="editor1"></textarea>
+		<textarea class="ckeditor" name="editor1"><?=$post->getData();?></textarea>
 		<script type="text/javascript">
 			CKEDITOR.replace( 'editor1',{
 				height: '600px'

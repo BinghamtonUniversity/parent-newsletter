@@ -16,7 +16,7 @@ class Posts extends DataBoundObject {
 	protected $Status; //0- DRAFT, 1- PUBLISHED
 	protected $Created;
 	protected $Updated;
-	protected $FirstPublished;
+	protected $FirstPublished = null;
 	protected $Published;
 
 	protected $UserObject;
@@ -82,7 +82,7 @@ class Posts extends DataBoundObject {
 	public function setUser($name) {
 		try {
 			$this->UserObject = new Admin(array($name));
-			parent::setUser($id);
+			parent::setUser($name);
 		}
 		catch (Exception $e) {
 			throw new Exception("The user you are trying to assign doesnt exist");
@@ -90,39 +90,58 @@ class Posts extends DataBoundObject {
 	}
 
 	public function setStatus($s) {
-		if($s === this::STATUS_DRAFT || $s === this::STATUS_PUBLISHED) {
+		if($s === self::STATUS_DRAFT || $s === self::STATUS_PUBLISHED) {
 			parent::setStatus($s);
-			if($this->Status === this::STATUS_PUBLISHED) {
-				$this->setFirstPublished(date("Y-m-d H:i:s"));
-				$this->setPublished(date("Y-m-d H:i:s"));
-			}
+			
 		}
 		else
 			throw new Exception("Wrong status");
 	}
 
-	public function setFirstPublished() {
-		throw new Exception("Cant explicitly call this function");
+	private function setFirstPublished($var) {
+		parent::setFirstPublished($var);
 	}
 
-	public function setCreated() {
-		throw new Exception("cant change created");
+	private function setCreated($var) {
+		parent::setCreated($var);
 	}
 
-	public function setUpdated() {
-		throw new Exception("Cant explicitly call Posts::setUpdated()");
+	private function setUpdated($var) {
+		parent::setUpdated($var);
 	}
 
 	public function save() {
-		parent::setUpdated(date("Y-m-d H:i:s"));
-		if($this>Status == this::STATUS_PUBLISHED)
-			parent::setPublished(date("Y-m-d H:i:s"));
+		$this->setUpdated(date("Y-m-d H:i:s"));
+
+		if($this->Status === self::STATUS_PUBLISHED) {
+			if($this->getFirstPublished() === null)
+				$this->setFirstPublished(date("Y-m-d H:i:s"));
+			$this->setPublished(date("Y-m-d H:i:s"));
+		}
 		parent::save();
 	}
 
-	public function setPublished() {
-		throw new Exception("Cant explicitly call Posts::setPublished()");
+	public function insert() {
+		//We have to use the direct variable value as we will try to load IDs when we are going to get and it conflicts.
+		if($this->Status === self::STATUS_PUBLISHED) {
+			if($this->FirstPublished == "")
+				$this->setFirstPublished(date("Y-m-d H:i:s"));
+			$this->setPublished(date("Y-m-d H:i:s"));
+		}
+		$this->setUpdated(date("Y-m-d H:i:s"));
+		parent::insert();
 	}
 
+	private function setPublished($var) {
+		parent::setPublished($var);
+	}
+
+	public function setTitle($var) {
+		if(strlen($var) > 1 && strlen($var) <= 255) {
+			parent::setTitle($var);
+		}
+		else
+			throw new Exception("Title should be between 1 and 255 charecters");
+	}
 }
 ?>

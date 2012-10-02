@@ -1,8 +1,10 @@
 <?php
 require_once '../base/include_top.php';
 
-if(!isset($_SESSION['admin'])) {echo "admin permissions required"; exit;}	
-
+if(!isset($_SESSION['admin'])) {
+	header("Location: ../index.php?error=".urlencode("Admin permission required"));
+	exit;
+}	
 $error = null;
 
 if(isset($_GET['user'])) { 
