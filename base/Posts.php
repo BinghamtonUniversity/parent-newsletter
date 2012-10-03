@@ -143,5 +143,52 @@ class Posts extends DataBoundObject {
 		else
 			throw new Exception("Title should be between 1 and 255 charecters");
 	}
+
+	public static function AllPosts($sort = false) {
+		$query = "SELECT * FROM AT_POSTS";
+		if($sort) $query .= " ORDER BY CREATED DESC ";
+
+		$result = Database::query($query);
+
+		$ans = array();
+		for($row = $result->fetch();$row;$row = $result->fetch())
+		{
+			$e = new Posts();
+			$e->populateData($row);				
+			$ans[] = $e;
+		}
+		
+		return $ans;
+	}
+
+	public function getCreated() {
+		$val = parent::getCreated();
+		if($val == "0000-00-00 00:00:00")
+			return null;
+		return $val;
+	}
+
+	public function getUpdated() {
+		$val = parent::getUpdated();
+		if($val == "0000-00-00 00:00:00")
+			return null;
+		return $val;
+	}
+
+	public function getFirstPublished() {
+		$val = parent::getFirstPublished();
+		if($val == "0000-00-00 00:00:00")
+			return null;
+		return $val;
+	}
+
+	public function getPublished() {
+		$val = parent::getPublished();
+		if($val == "0000-00-00 00:00:00")
+			return null;
+		return $val;
+	}
+
+
 }
 ?>

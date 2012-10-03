@@ -1,5 +1,10 @@
 <?php 
 include_once('base/include_top.php');
+if(!isset($_SESSION['admin'])) {
+	header("Location: index.php?error=".urlencode("Admin permission required"));
+	exit;
+}
+
 if(!isset($_GET['id'])) {
 	header("Location: panel.php");
 	exit;
@@ -33,10 +38,11 @@ catch(Exception $e) {
 	</div>
 	<?php } ?>
 
-	<h3>Enter the new post:</h3>
-	<form action="services/addPost.php" method="POST">
+	<h3>Edit the post:</h3>
+	<form action="services/editPost.php" method="POST">
 
 		<lable> <b>Title:</b> </lable>
+		<input name="id" type="hidden" value="<?=$post->getPostID();?>" />
 		<input name="title" type="text" class="sedang" value="<?=$post->getTitle();?>"/>
 		<input name="draft" type="submit" class="button" value="Save as draft"/>
 		<input name="publish" type="submit" class="button" value="Publish!"/>

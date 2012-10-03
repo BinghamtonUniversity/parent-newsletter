@@ -1,5 +1,9 @@
 <?php 
 include_once('base/include_top.php');
+if(!isset($_SESSION['admin'])) {
+	header("Location: index.php?error=".urlencode("Admin permission required"));
+	exit;
+}
 ?>
 <html>
 <head>
