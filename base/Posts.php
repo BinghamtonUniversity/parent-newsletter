@@ -204,6 +204,23 @@ class Posts extends DataBoundObject {
 		return false;
 	}
 
+	public static function search($keywords) {
+		$query = "SELECT *,UNIX_TIMESTAMP( PUBLISHED ) as PUBLISHED_UNIX_TIMESTAMP FROM AT_POSTS WHERE MATCH(TITLE,POST) AGAINST(?)";
+
+		$result = Database::query($query,$keywords);
+
+		$ans = array();
+		for($row = $result->fetch();$row;$row = $result->fetch())
+		{
+			$e = new Posts();
+			$e->populateData($row);
+			$e->setPublishedTimeStamp($row['PUBLISHED_UNIX_TIMESTAMP']);
+			$ans[] = $e;
+		}
+		
+		return $ans;
+	}
+
 	private function setPublishedTimeStamp($val) {
 		parent::setPublishedTimeStamp($val);
 	}

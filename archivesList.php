@@ -1,6 +1,10 @@
 <?php 
 include_once('base/include_top.php');
-$posts = Posts::AllPosts(true,true);
+if(isset($_GET['search']))
+	$posts = Posts::search($_GET['search']);
+else
+	$posts = Posts::AllPosts(true,true);
+
 $monthName = array(
 	1 => "Jan",
 	2 => "Feb",
@@ -16,9 +20,16 @@ $monthName = array(
 	12 => "Dec"
 	);
 
+if(isset($_GET['search'])) {
 ?>
-
+<h1> Search Result for <?=$_GET['search']?> </h1>
+<?php 
+}
+else {
+?>
 <h1> Archives list </h1>
+<?php
+} ?>
 <dl>
 	<?php
 	$currentYear = null;
