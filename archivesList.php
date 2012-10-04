@@ -1,6 +1,6 @@
 <?php 
 include_once('base/include_top.php');
-if(isset($_GET['search']))
+if(isset($_GET['search']) && strlen(trim($_GET['search'])) > 0 )
 	$posts = Posts::search($_GET['search']);
 else
 	$posts = Posts::AllPosts(true,true);
@@ -20,7 +20,8 @@ $monthName = array(
 	12 => "Dec"
 	);
 
-if(isset($_GET['search'])) {
+if(isset($_GET['search']) && strlen(trim($_GET['search'])) > 0 ) {
+	$_GET['search'] = trim($_GET['search']);
 ?>
 <h1> Search Result for <?=$_GET['search']?> </h1>
 <?php 
