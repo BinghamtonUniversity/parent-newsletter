@@ -19,6 +19,8 @@ class Posts extends DataBoundObject {
 	protected $FirstPublished = null;
 	protected $Published;
 
+	public $PublishedTimeStamp;
+
 	protected $UserObject;
 	
 	const STATUS_DRAFT = 0;
@@ -63,7 +65,7 @@ class Posts extends DataBoundObject {
 			"CREATED" => "Created",
 			"UPDATED" => "Updated",
 			"FIRST_PUBLISHED" => "FirstPublished",
-			"PUBLISHED" => "Published"
+			"PUBLISHED" => "Published",
 		);
 	}
 	
@@ -144,17 +146,19 @@ class Posts extends DataBoundObject {
 			throw new Exception("Title should be between 1 and 255 charecters");
 	}
 
-	public static function AllPosts($sort = false) {
-		$query = "SELECT * FROM AT_POSTS";
-		if($sort) $query .= " ORDER BY CREATED DESC ";
-
+	public static function AllPosts($sort = false,$onlyPublished = false) {
+		$query = "SELECT *,UNIX_TIMESTAMP( PUBLISHED ) as PUBLISHED_UNIX_TIMESTAMP FROM AT_POSTS";
+		if($onlyPublished) $query .= " WHERE STATUS=".self::STATUS_PUBLISHED." ";
+		if($sort) $query .= " ORDER BY PUBLISHED DESC ";
+		//echo $query;
 		$result = Database::query($query);
 
 		$ans = array();
 		for($row = $result->fetch();$row;$row = $result->fetch())
 		{
 			$e = new Posts();
-			$e->populateData($row);				
+			$e->populateData($row);
+			$e->setPublishedTimeStamp($row['PUBLISHED_UNIX_TIMESTAMP']);
 			$ans[] = $e;
 		}
 		
@@ -189,6 +193,19 @@ class Posts extends DataBoundObject {
 		return $val;
 	}
 
+	public static function LatestPost() {
+		$query = "SELECT * FROM AT_POSTS ORDER BY PUBLISHED DESC LIMIT 1";
+		$result = Database::query($query);
+		if($row = $result->fetch()) {
+			$p = new Posts();
+			$p->populateData($row);
+			return $p;
+		}
+		return false;
+	}
 
+	private function setPublishedTimeStamp($val) {
+		parent::setPublishedTimeStamp($val);
+	}
 }
 ?>
