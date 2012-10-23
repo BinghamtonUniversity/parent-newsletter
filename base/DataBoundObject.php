@@ -1,6 +1,6 @@
 <?php
 require_once 'Database.php';
-
+require_once 'ExceptionHandler.php';
 /**
  * Data Bound Object ORM
  * ORM (Object relation mapping) is done here in this class.
@@ -113,7 +113,7 @@ abstract class DataBoundObject {
 		$this->arModifiedRelations = array ();
 		
 		if ($this->isIDDefined ()) {
-			$this->Load ();
+			$this->Load (true);
 		}
 	}
 	/**
@@ -161,10 +161,10 @@ abstract class DataBoundObject {
 	 * Throws exception if it fails due to ndefined IDs
 	 * @throws Exception
 	 */
-	public function Load() {
+	public function Load($fromConstructor = false) {
 		
 		$dataToBeChanged = array ();
-		if ($this->isIDDefined ()) {
+		if ($this->isIDDefined ()) { 
 			$strQuery = " SELECT ";
 			foreach ( $this->arRelationMap as $key => $value ) {
 				$strQuery .= $key . ",";
@@ -172,21 +172,28 @@ abstract class DataBoundObject {
 			$strQuery = substr ( $strQuery, 0, strlen ( $strQuery ) - 1 );
 			$strQuery .= " FROM " . $this->strTableName . " WHERE ";
 			
+			//var_dump($this->ID);
+
 			foreach ( $this->ID as $clause ) {
 				$strQuery .= $clause ['field'] . " = ? AND ";
-				eval ( '$DATA_TO_DB_' . $clause ['field'] . ' = $clause[\'value\'];' );
+
+				if($fromConstructor)
+					eval ( '$DATA_TO_DB_' . $clause ['field'] . ' = $clause[\'value\'];' );
+				else
+					eval ( '$DATA_TO_DB_' . $clause ['field'] . ' = $this->'.$this->arRelationMap[$clause['field']].';' );
 				$dataToBeChanged [] = '$DATA_TO_DB_' . $clause ['field'];
 			}
 			$strQuery = substr ( $strQuery, 0, strlen ( $strQuery ) - 4 );
 			
 			$result = null;
 			$parmForQuery = implode ( ',', $dataToBeChanged );
-			//	echo '$result = Database::query($strQuery,' . $parmForQuery . ');'.$strQuery.$DATA_TO_DB_ID;
+			//echo '$result = Database::query($strQuery,' . $parmForQuery . ');';
 			eval ( '$result = Database::query($strQuery,' . $parmForQuery . ');' );
 			$row = $result->fetch ();
 			if (! $row) {
-				throw new Exception ( " Could not load the required ID/IDs " );
+				throw new Exception ( " Could not load the required ID/IDs as row not found " );
 			}
+
 			foreach ( $row as $key => $value ) {
 				if (isset ( $this->arRelationMap [$key] )) {
 					
@@ -304,7 +311,7 @@ abstract class DataBoundObject {
 						$dataToBeChanged [] = '$DATA_TO_DB_' . $key;
 					}
 				}
-				
+				//var_dump($this);
 				$strQuery = substr ( $strQuery, 0, strlen ( $strQuery ) - 1 );
 				$strQuery .= ' WHERE ';
 				
@@ -316,6 +323,7 @@ abstract class DataBoundObject {
 				$strQuery = substr ( $strQuery, 0, strlen ( $strQuery ) - 4 );
 				
 				$parmForQuery = implode ( ',', $dataToBeChanged );
+				//echo $strQuery.'-'.$parmForQuery.$DATA_TO_DB_NAME.'-'.$DATA_CLAUSE_TO_DB_NAME.'<br>';
 				eval ( '$result = Database::updateQuery($strQuery,' . $parmForQuery . ');' );
 				
 				//				As the changed values are updated. We need to reflect it in the modified value
@@ -326,7 +334,7 @@ abstract class DataBoundObject {
 				}
 				unset ( $dataToBeChanged );
 				$this->arModifiedRelations = array ();
-				
+				//var_dump($this);
 				//LOAD Again. Cos when HTML purifier changes anything its better to load.
 				$this->Load ();
 			} else {
