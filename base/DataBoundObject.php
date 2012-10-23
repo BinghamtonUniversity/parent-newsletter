@@ -1,6 +1,5 @@
 <?php
 require_once 'Database.php';
-require_once 'ExceptionHandler.php';
 /**
  * Data Bound Object ORM
  * ORM (Object relation mapping) is done here in this class.
