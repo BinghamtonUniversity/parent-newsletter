@@ -20,3 +20,11 @@ Requirements:
 We will be wrapping this in the standard University stylesheet and template.
 
 =====================
+
+Instalation Notes:
+
+Run the database script at /base/db.sql to create the required database/table. It also creates an initial admin entry. The admin entry must be in the format of username and MD5 hash password.
+
+The inital entry created will contain:
+* Username: root
+* Password: root

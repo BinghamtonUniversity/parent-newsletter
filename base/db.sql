@@ -1,3 +1,5 @@
+# Optional database creating line to be executed
+
 CREATE DATABASE budb;
 
 # ADMIN ACCESS TABLE LIST
@@ -25,3 +27,14 @@ CREATE TABLE AT_POSTS (
 	FULLTEXT (TITLE,POST),
 	INDEX (TITLE(85),POST(247))
 )ENGINE=MyISAM CHARACTER SET=utf8;
+
+# Insert the first row into database for admin
+
+INSERT INTO  `AT_ADMIN` (
+`USERNAME` ,
+`PASSWORD`
+)
+VALUES (
+'root',  '63a9f0ea7bb98050796b649e85481845'
+);
+
