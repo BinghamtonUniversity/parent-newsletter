@@ -59,6 +59,5 @@ if(isset($_POST['user']) && isset ($_POST['passwd'])) {
 else {
 	$error = "Username/password has not reached us.";
 }
-echo $error;
 header ("Location: ../admin.php?error=".urlencode($error));
 ?>
