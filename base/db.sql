@@ -1,6 +1,6 @@
 # Optional database creating line to be executed
 
-CREATE DATABASE budb;
+CREATE DATABASE parent_newsletter;
 
 # ADMIN ACCESS TABLE LIST
 # ENSURE THAT ATLEAST ONE ADMIN STAYS IN THIS.

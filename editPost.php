@@ -51,9 +51,7 @@ catch(Exception $e) {
 			CKEDITOR.replace( 'editor1',{
 				height: '600px'
 			} );
-		</script>
-
-		
+		</script>		
 	</form>
 	</div>
 <?php include_once('footer.php'); ?>
